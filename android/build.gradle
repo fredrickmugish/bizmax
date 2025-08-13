@@ -1,0 +1,52 @@
+buildscript {
+    ext.kotlin_version = '1.8.22'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.3.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    
+    // Force consistent Kotlin versions across all modules
+    configurations.all {
+        resolutionStrategy {
+            force "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
+            force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22"
+            force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22"
+            
+            // Replace jdk7 and jdk8 variants with main stdlib
+            eachDependency { details ->
+                if (details.requested.group == 'org.jetbrains.kotlin') {
+                    if (details.requested.name == 'kotlin-stdlib-jdk7' || 
+                        details.requested.name == 'kotlin-stdlib-jdk8') {
+                        details.useTarget group: details.requested.group, 
+                                        name: 'kotlin-stdlib', 
+                                        version: '1.8.22'
+                    }
+                }
+            }
+        }
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
