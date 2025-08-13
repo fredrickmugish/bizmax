@@ -17,17 +17,25 @@ class BusinessRepository {
   Future<List<BusinessRecord>> getBusinessRecords() async {
     if (_databaseService == null) {
       // Web implementation: always fetch from API
+      if (kDebugMode) print('BusinessRepository: Web platform. Fetching records from API.');
       final apiRecords = await _apiService.getBusinessRecords();
+      if (kDebugMode) print('BusinessRepository: Received ${apiRecords.length} records from API (Web).');
       return apiRecords.map((e) => BusinessRecord.fromJson(e)).toList();
     }
 
+    if (kDebugMode) print('BusinessRepository: Mobile platform. Getting local records.');
     List<BusinessRecord> localRecords = await _databaseService!.getAllRecords();
+    if (kDebugMode) print('BusinessRepository: Found ${localRecords.length} local records. Checking connectivity.');
     final connectivityResult = await _connectivity.checkConnectivity();
+    if (kDebugMode) print('BusinessRepository: Connectivity result: $connectivityResult.');
+
 
     if (connectivityResult != ConnectivityResult.none) {
       // Online: Try to fetch from API
       try {
+        if (kDebugMode) print('BusinessRepository: Online. Attempting to fetch records from API.');
         final apiRecords = await _apiService.getBusinessRecords();
+        if (kDebugMode) print('BusinessRepository: Received ${apiRecords.length} records from API (Mobile).');
         final recordsFromApi = apiRecords.map((e) => BusinessRecord.fromJson(e)).toList();
 
         // Get dirty records from local DB

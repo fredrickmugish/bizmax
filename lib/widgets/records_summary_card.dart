@@ -52,7 +52,7 @@ class RecordsSummaryCard extends StatelessWidget {
               ),
             ),
           ],
-          if (isOwner && showExpenses) ...[
+          if (showExpenses) ...[
             const SizedBox(width: 16),
             Expanded(
               child: _buildSummaryItem(

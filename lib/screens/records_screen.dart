@@ -66,7 +66,7 @@ class _RecordsScreenState extends State<RecordsScreen>
     final user = authProvider.user;
     final role = user != null ? (user['role'] ?? user['data']?['role']) : null;
     final isOwner = role == 'owner';
-    final newTabCount = isOwner ? 4 : 1; // 4 for owner, 1 for salesperson
+    final newTabCount = isOwner ? 4 : 2; // 4 for owner, 2 for salesperson (Mauzo, Matumizi)
     if (_tabController == null || _tabCount != newTabCount) {
       _tabController?.dispose();
       _tabController = TabController(length: newTabCount, vsync: this);
@@ -207,8 +207,7 @@ class _RecordsScreenState extends State<RecordsScreen>
       const Tab(text: 'Mauzo', icon: Icon(Icons.point_of_sale)),
       if (isOwner)
         const Tab(text: 'Manunuzi', icon: Icon(Icons.shopping_cart)),
-      if (isOwner)
-        const Tab(text: 'Matumizi', icon: Icon(Icons.money_off)),
+      const Tab(text: 'Matumizi', icon: Icon(Icons.money_off)),
     ];
     final List<Widget> tabViews = [
       if (isOwner)
@@ -216,8 +215,7 @@ class _RecordsScreenState extends State<RecordsScreen>
       _buildRecordsList(salesRecords, isOwner),
       if (isOwner)
         _buildRecordsList(purchaseRecords, isOwner),
-      if (isOwner)
-        _buildRecordsList(expenseRecords, isOwner),
+      _buildRecordsList(expenseRecords, isOwner),
     ];
     // Defensive: If TabController is not ready or mismatched, show loading
     if (_tabController == null || _tabController!.length != tabs.length) {
@@ -290,7 +288,7 @@ class _RecordsScreenState extends State<RecordsScreen>
             children: [
               RecordsSummaryCard(
                 showPurchases: isOwner,
-                showExpenses: isOwner,
+                showExpenses: true,
                 records: filtered,
               ),
               Expanded(
@@ -462,19 +460,18 @@ class _RecordsScreenState extends State<RecordsScreen>
                   }
                 },
               ),
-            if (isOwner)
-              ListTile(
-                leading: const Icon(Icons.money_off, color: Colors.red),
-                title: const Text('Ongeza Matumizi'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  final result = await Navigator.pushNamed(context, AppRoutes.addExpense);
-                  if (result == true && mounted) {
-                    final provider = context.read<RecordsProvider>();
-                    provider.loadRecords();
-                  }
-                },
-              ),
+            ListTile(
+              leading: const Icon(Icons.money_off, color: Colors.red),
+              title: const Text('Ongeza Matumizi'),
+              onTap: () async {
+                Navigator.pop(context);
+                final result = await Navigator.pushNamed(context, AppRoutes.addExpense);
+                if (result == true && mounted) {
+                  final provider = context.read<RecordsProvider>();
+                  provider.loadRecords();
+                }
+              },
+            ),
           ],
         ),
       ),

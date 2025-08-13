@@ -11,6 +11,7 @@ import 'package:uuid/uuid.dart';
 import '../services/insufficient_stock_exception.dart';
 import '../utils/app_utils.dart';
 import '../utils/app_utils.dart'; // Import AppUtils
+import 'package:rahisisha/providers/auth_provider.dart'; // Add this line
 
 class CartItem {
   final InventoryItem product;
@@ -76,9 +77,12 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final inventoryProvider = context.read<InventoryProvider>();
-      if (inventoryProvider.items.isEmpty) {
-        inventoryProvider.loadInventory();
+      // Only load inventory if the record type involves products (sale or purchase)
+      if (widget.recordType == 'sale' || widget.recordType == 'purchase') {
+        final inventoryProvider = context.read<InventoryProvider>();
+        if (inventoryProvider.items.isEmpty) {
+          inventoryProvider.loadInventory();
+        }
       }
     });
   }
@@ -1063,6 +1067,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
           totalAmount: null,
           amountPaid: null,
           debtAmount: null,
+          user: context.read<AuthProvider>().user, // Add this line
         );
         overallSuccess = await context.read<RecordsProvider>().addRecord(record);
       } else {

@@ -174,15 +174,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
         ),
       );
     }
-    final hour = DateTime.now().hour;
-    String greeting;
-    if (hour < 12) {
-      greeting = 'Habari za Asubuhi';
-    } else if (hour < 17) {
-      greeting = 'Habari za Mchana';
-    } else {
-      greeting = 'Habari za Jioni';
-    }
+    String greeting = 'Habari';
     final businessName = context.watch<BusinessProvider>().businessName;
     return Card(
       elevation: 2,
